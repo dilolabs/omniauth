@@ -7,19 +7,18 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu, macos]
         ruby: [truffleruby, truffleruby-head]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - name: Install dependencies
-      run: bundle install
+        bundler-cache: true
     - name: Run tests
       run: bundle exec rake

@@ -335,7 +335,9 @@ module OmniAuth
 
     def mock_callback_call
       setup_phase
-      @env['omniauth.origin'] = session.delete('omniauth.origin')
+
+      origin = session.delete('omniauth.origin')
+      @env['omniauth.origin'] ||= origin
       @env['omniauth.origin'] = nil if env['omniauth.origin'] == ''
       @env['omniauth.params'] = session.delete('omniauth.params') || {}
 
@@ -481,7 +483,7 @@ module OmniAuth
         OmniAuth.config.full_host.call(env)
       else
         # in Rack 1.3.x, request.url explodes if scheme is nil
-        if request.scheme && request.url.match(URI::ABS_URI)
+        if request.scheme && URI.parse(request.url).absolute?
           uri = URI.parse(request.url.gsub(/\?.*$/, ''))
           uri.path = ''
           # sometimes the url is actually showing http inside rails because the
